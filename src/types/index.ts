@@ -19,7 +19,6 @@ export interface VendorApplication {
   email: string;
   phone: string;
   address: string;
-  city?: string;
   country?: string;
   business_type: string;
   description?: string;

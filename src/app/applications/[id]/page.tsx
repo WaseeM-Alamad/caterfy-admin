@@ -192,7 +192,6 @@ export default function ApplicationDetailPage() {
           <DetailCard title="Location & Business" icon={<MapPin size={13} style={{ color: 'var(--brand)' }} />}>
             <Row icon={<Building2 size={12} />} label="Type"    value={app.business_type} />
             <Row icon={<MapPin size={12} />}    label="Address" value={app.address} />
-            <Row icon={<MapPin size={12} />}    label="City"    value={app.city ?? '—'} />
             <Row icon={<Calendar size={12} />}  label="Applied" value={format(new Date(app.created_at), 'MMM d, yyyy')} />
           </DetailCard>
 
