@@ -14,22 +14,18 @@ export interface Admin {
 
 export interface VendorApplication {
   id: string;
+  vendor_id?: string;
   store_name: string;
   owner_name: string;
   email: string;
   phone: string;
-  address: string;
-  country?: string;
+  password: string;
   business_type: string;
-  description?: string;
-  website_url?: string;
-  logo_url?: string;
-  documents?: string[];
+  store_type: string;
   status: ApplicationStatus;
   reviewed_by?: string;
   reviewer?: Admin;
   review_notes?: string;
-  submitted_at: string;
   reviewed_at?: string;
   created_at: string;
 }

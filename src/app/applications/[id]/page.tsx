@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { VendorApplication } from '@/types';
 import { format } from 'date-fns';
-import { ArrowLeft, CheckCircle, XCircle, Search, Mail, Phone, MapPin, Globe, Building2, FileText, User, Calendar } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Search, Mail, Phone, Building2, Store, User, Calendar } from 'lucide-react';
 
 export default function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,16 +46,45 @@ export default function ApplicationDetailPage() {
       return;
     }
     setBusy(status);
-    const { error } = await supabase
-      .from('vendor_applications')
-      .update({ status, reviewed_by: admin?.id, review_notes: notes || null, reviewed_at: new Date().toISOString() })
-      .eq('id', id);
+
+    let error: string | null = null;
+
+    if (status === 'approved') {
+      // Server-side: create auth user + vendor profile + update application atomically
+      const res = await fetch('/api/approve-vendor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          applicationId: id,
+          email: app!.email,
+          password: app!.password,
+          ownerName: app!.owner_name,
+          phone: app!.phone,
+          businessType: app!.business_type,
+          storeName: app!.store_name,
+          storeType: app!.store_type,
+          reviewedBy: admin?.id ?? null,
+          reviewNotes: notes || null,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        error = body.error ?? 'Something went wrong. Please try again.';
+      }
+    } else {
+      // Decline / mark in-review — just update the application row
+      const { error: pgError } = await supabase
+        .from('vendor_applications')
+        .update({ status, reviewed_by: admin?.id, review_notes: notes || null, reviewed_at: new Date().toISOString() })
+        .eq('id', id);
+      if (pgError) error = pgError.message;
+    }
 
     if (error) {
-      showToast('Something went wrong. Please try again.', 'error');
+      showToast(error, 'error');
     } else {
       showToast(
-        status === 'approved' ? 'Application approved! Vendor is now active.' :
+        status === 'approved' ? 'Application approved! Vendor account created.' :
         status === 'declined' ? 'Application declined.' :
         'Marked as in review.',
         'success'
@@ -183,26 +212,17 @@ export default function ApplicationDetailPage() {
         {/* Details grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.125rem' }}>
           <DetailCard title="Contact" icon={<User size={13} style={{ color: 'var(--brand)' }} />}>
-            <Row icon={<User size={12} />}    label="Owner"   value={app.owner_name} />
-            <Row icon={<Mail size={12} />}    label="Email"   value={app.email} />
-            <Row icon={<Phone size={12} />}   label="Phone"   value={app.phone} />
-            {app.website_url && <Row icon={<Globe size={12} />} label="Website" value={app.website_url} link />}
+            <Row icon={<User size={12} />}  label="Owner" value={app.owner_name} />
+            <Row icon={<Mail size={12} />}  label="Email" value={app.email} />
+            <Row icon={<Phone size={12} />} label="Phone" value={app.phone} />
           </DetailCard>
 
-          <DetailCard title="Location & Business" icon={<MapPin size={13} style={{ color: 'var(--brand)' }} />}>
-            <Row icon={<Building2 size={12} />} label="Type"    value={app.business_type} />
-            <Row icon={<MapPin size={12} />}    label="Address" value={app.address} />
-            <Row icon={<Calendar size={12} />}  label="Applied" value={format(new Date(app.created_at), 'MMM d, yyyy')} />
+          <DetailCard title="Business" icon={<Building2 size={13} style={{ color: 'var(--brand)' }} />}>
+            <Row icon={<Store size={12} />}    label="Store Name"     value={app.store_name} />
+            <Row icon={<Building2 size={12} />} label="Business Type" value={app.business_type} />
+            <Row icon={<Building2 size={12} />} label="Store Type"    value={app.store_type} />
+            <Row icon={<Calendar size={12} />}  label="Applied"       value={format(new Date(app.created_at), 'MMM d, yyyy')} />
           </DetailCard>
-
-          {app.description && (
-            <div className="card" style={{ padding: '1.125rem', gridColumn: '1 / -1' }}>
-              <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text2)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <FileText size={13} style={{ color: 'var(--brand)' }} /> Description
-              </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.65, opacity: 0.85 }}>{app.description}</p>
-            </div>
-          )}
         </div>
       </div>
     </AppShell>
