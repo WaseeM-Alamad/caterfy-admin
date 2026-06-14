@@ -50,10 +50,11 @@ export default function LoginPage() {
           height: 500,
           borderRadius: "50%",
           background:
-            "radial-gradient(circle,rgba(147,89,255,0.1) 0%,transparent 70%)",
+            "radial-gradient(circle, var(--brand-glow) 0%, transparent 70%)",
           top: -80,
           left: -80,
           pointerEvents: "none",
+          opacity: 1.5,
         }}
       />
       <div
@@ -63,7 +64,7 @@ export default function LoginPage() {
           height: 300,
           borderRadius: "50%",
           background:
-            "radial-gradient(circle,rgba(147,89,255,0.07) 0%,transparent 70%)",
+            "radial-gradient(circle, var(--brand-glow) 0%, transparent 70%)",
           bottom: 0,
           right: 0,
           pointerEvents: "none",
@@ -120,12 +121,12 @@ export default function LoginPage() {
         {/* Card */}
         <div
           style={{
-            background: "rgba(19,13,33,0.9)",
-            border: "1px solid rgba(147,89,255,0.18)",
+            background: "var(--bg2)",
+            border: "1px solid var(--border-hover)",
             borderRadius: 16,
             padding: "1.75rem",
             backdropFilter: "blur(20px)",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.45)",
+            boxShadow: "var(--login-shadow, 0 24px 60px rgba(0,0,0,0.45))",
           }}
         >
           <form
