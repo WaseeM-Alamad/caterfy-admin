@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { LayoutDashboard, FileText, MessageSquare, LogOut } from "lucide-react";
+import { useTheme } from "@/lib/theme-context";
+import { LayoutDashboard, FileText, MessageSquare, LogOut, Sun, Moon } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -14,6 +15,7 @@ const NAV = [
 export default function Sidebar() {
   const path = usePathname();
   const { admin, signOut } = useAuth();
+  const { theme, toggle } = useTheme();
 
   const initials = admin?.full_name
     ? admin.full_name
@@ -203,6 +205,24 @@ export default function Sidebar() {
               {admin?.role?.replace("_", " ") ?? "admin"}
             </div>
           </div>
+          <button
+            onClick={toggle}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--text3)",
+              padding: 4,
+              borderRadius: 6,
+              display: "flex",
+              transition: "color 0.12s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--brand)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text3)")}
+          >
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
           <button
             onClick={signOut}
             title="Sign out"

@@ -18,6 +18,22 @@
   --text3: #5C5078;
 }
 
+[data-theme="light"] {
+  --brand: #7B3AE8;
+  --brand-hover: #6B2FD0;
+  --brand-light: #9359FF;
+  --brand-glow: rgba(123, 58, 232, 0.2);
+  --bg: #F5F3FF;
+  --bg2: #FFFFFF;
+  --bg3: #EDE8FF;
+  --bg4: #DDD5FF;
+  --border: rgba(123, 58, 232, 0.12);
+  --border-hover: rgba(123, 58, 232, 0.28);
+  --text: #1A0A3D;
+  --text2: #5C4A8A;
+  --text3: #9E8FBF;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
