@@ -55,7 +55,7 @@ export default function ChatPage() {
     const { data } = await supabase
       .from('chat_tickets')
       .select('*, claimer:admins(id,full_name)')
-      .order('last_message_at', { ascending: false, nullsFirst: false })
+      .order('last_message_at', { ascending: false, nullsFirst: true })
       .order('created_at', { ascending: false });
 
     const list = data ?? [];
