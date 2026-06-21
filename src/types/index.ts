@@ -36,6 +36,7 @@ export interface ChatTicket {
   user_name: string;
   user_email: string;
   user_avatar?: string;
+  user_type: 'customer' | 'vendor';
   subject: string;
   status: ChatTicketStatus;
   claimed_by?: string;
@@ -51,7 +52,7 @@ export interface ChatMessage {
   id: string;
   ticket_id: string;
   sender_id: string;
-  sender_type: 'user' | 'admin';
+  sender_type: 'customer' | 'vendor' | 'admin';
   sender_name: string;
   content: string;
   created_at: string;

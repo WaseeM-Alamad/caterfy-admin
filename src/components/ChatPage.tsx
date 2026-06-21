@@ -8,9 +8,27 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { ChatTicket, ChatMessage } from '@/types';
 import { formatDistanceToNow, format } from 'date-fns';
-import { MessageSquare, Search, Send, Zap, CheckCircle, Archive, User } from 'lucide-react';
+import { MessageSquare, Search, Send, Zap, CheckCircle, Archive, User, Store, ShoppingBag } from 'lucide-react';
 
 type Filter = 'all' | 'open' | 'claimed' | 'resolved';
+
+function UserTypeBadge({ type }: { type: 'customer' | 'vendor' | undefined }) {
+  if (!type) return null;
+  const isVendor = type === 'vendor';
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 3,
+      fontSize: '0.625rem', fontWeight: 700, padding: '1px 6px',
+      borderRadius: 10,
+      background: isVendor ? 'rgba(34,197,94,0.12)' : 'rgba(59,130,246,0.12)',
+      color: isVendor ? '#22C55E' : '#3B82F6',
+      border: `1px solid ${isVendor ? 'rgba(34,197,94,0.25)' : 'rgba(59,130,246,0.25)'}`,
+    }}>
+      {isVendor ? <Store size={9} /> : <ShoppingBag size={9} />}
+      {isVendor ? 'Vendor' : 'Customer'}
+    </span>
+  );
+}
 
 export default function ChatPage() {
   const { admin }      = useAuth();
@@ -269,7 +287,10 @@ export default function ChatPage() {
                             {ticket.last_message}
                           </div>
                         )}
-                        <TicketBadge status={ticket.status} />
+                        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                          <TicketBadge status={ticket.status} />
+                          <UserTypeBadge type={ticket.user_type} />
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -295,7 +316,10 @@ export default function ChatPage() {
                     {selected.user_name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text)' }}>{selected.user_name}</div>
+                    <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {selected.user_name}
+                      <UserTypeBadge type={selected.user_type} />
+                    </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{selected.user_email} · {selected.subject}</div>
                   </div>
                   <div style={{ marginLeft: 6 }}><TicketBadge status={selected.status} /></div>
