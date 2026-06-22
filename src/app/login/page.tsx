@@ -14,7 +14,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (status === "ready" && user) router.replace("/dashboard");
   }, [status, user, router]);
@@ -28,7 +27,6 @@ export default function LoginPage() {
       setError("Invalid email or password.");
       setLoading(false);
     }
-    // On success, onAuthStateChange fires → status becomes ready → useEffect above redirects
   };
 
   return (

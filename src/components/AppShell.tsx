@@ -16,10 +16,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [status, user, router]);
 
-  // Still checking auth
   if (status === 'loading') return <PageSpinner />;
-
-  // Auth done but no user — blank while redirect happens
   if (!user) return null;
 
   return (

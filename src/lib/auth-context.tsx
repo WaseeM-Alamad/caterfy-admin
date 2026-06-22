@@ -8,8 +8,6 @@ import { Admin } from '@/types';
 interface AuthContextType {
   user: User | null;
   admin: Admin | null;
-  // 'loading' = haven't checked session yet
-  // 'ready'   = check done, user may or may not be logged in
   status: 'loading' | 'ready';
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -22,7 +20,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready'>('loading');
 
-  // Prevents a stale async fetchAdmin from overwriting newer state
   const fetchIdRef = useRef(0);
 
   async function loadAdmin(userId: string) {
@@ -33,18 +30,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select('*')
         .eq('id', userId)
         .single();
-      // Only apply if this is still the latest fetch
       if (fetchId !== fetchIdRef.current) return;
       if (!error && data) setAdmin(data as Admin);
-    } catch {
-      // Silently ignore — admin stays null, user is still logged in
-    }
+    } catch {}
   }
 
   useEffect(() => {
     let mounted = true;
 
-    // Step 1: get current session once on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
       const u = session?.user ?? null;
@@ -58,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Step 2: listen for future auth changes (login, logout, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (!mounted) return;

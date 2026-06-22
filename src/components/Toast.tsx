@@ -48,7 +48,6 @@ export function Toast({ message, type, onDismiss }: ToastProps) {
   );
 }
 
-// Lightweight hook — no external lib needed
 export function useToast() {
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const show = (message: string, type: ToastType = 'success') => setToast({ message, type });

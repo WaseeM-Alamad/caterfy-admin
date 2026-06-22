@@ -21,9 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Create the Supabase auth user.
-    //    The DB trigger (handle_new_user) fires on INSERT into auth.users and
-    //    automatically inserts into public.vendors using the metadata below.
+    // DB trigger (handle_new_user) fires here and auto-inserts into public.vendors using the metadata below.
     const { data: authData, error: authError } = await adminSupabase.auth.admin.createUser({
       email,
       password,
@@ -48,8 +46,7 @@ export async function POST(req: NextRequest) {
 
     const vendorId = authData.user.id;
 
-    // 2. Update the application: mark approved + store the new vendor_id.
-    //    No manual vendors insert needed — the trigger already handled it.
+    // No manual vendors insert needed — the trigger already handled it.
     const { error: appError } = await adminSupabase
       .from('vendor_applications')
       .update({

@@ -62,7 +62,6 @@ export default function ChatPage() {
     setTickets(list);
     setLoadingTickets(false);
 
-    // Auto-select from URL param on first load
     if (initialTicket && !selectedRef.current) {
       const found = list.find((t: ChatTicket) => t.id === initialTicket);
       if (found) openTicket(found);
@@ -72,7 +71,6 @@ export default function ChatPage() {
 
   useEffect(() => { fetchTickets(); }, [fetchTickets]);
 
-  // Realtime for ticket list
   useEffect(() => {
     const ch = supabase
       .channel('tickets-list')
@@ -95,7 +93,6 @@ export default function ChatPage() {
     setLoadingMsgs(false);
   };
 
-  // Realtime for messages in selected ticket
   useEffect(() => {
     if (!selected) return;
     const ch = supabase
@@ -110,7 +107,6 @@ export default function ChatPage() {
     return () => { supabase.removeChannel(ch); };
   }, [selected?.id]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);

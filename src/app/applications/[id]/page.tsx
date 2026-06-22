@@ -50,7 +50,6 @@ export default function ApplicationDetailPage() {
     let error: string | null = null;
 
     if (status === 'approved') {
-      // Server-side: create auth user + vendor profile + update application atomically
       const res = await fetch('/api/approve-vendor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,7 +71,6 @@ export default function ApplicationDetailPage() {
         error = body.error ?? 'Something went wrong. Please try again.';
       }
     } else {
-      // Decline / mark in-review — just update the application row
       const { error: pgError } = await supabase
         .from('vendor_applications')
         .update({ status, reviewed_by: admin?.id, review_notes: notes || null, reviewed_at: new Date().toISOString() })
@@ -91,7 +89,6 @@ export default function ApplicationDetailPage() {
       );
       setConfirming(null);
       setNotes('');
-      // Refetch
       const { data } = await supabase
         .from('vendor_applications')
         .select('*, reviewer:admins(id,full_name,email)')
